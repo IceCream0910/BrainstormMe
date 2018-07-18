@@ -1,31 +1,21 @@
-var express = require('express'),
+const express = require('express'),
     http = require('http'),
     https = require('https'),
     fs = require('fs'),
     urlencoded = require('body-parser').urlencoded,
     socketIo = require('socket.io'),
+    pg = require('pg-promise')(),
     twilio = require('twilio');
+    
+require('dotenv').config();
 
-    const { stringify} = require('flatted/cjs');
+const db = pg(process.env.DATABASE_URL);
 
-var promisify = require('util').promisify;
-
-const pg = require('pg-promise')();
-const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
-// const dbConfig = {
-//     host: 'localhost',
-//     port: 5432,
-//     database: 'brainMe',
-//     user: 'illia_chaban',
-    // password: 'user-password'
-// };
-const db = pg(process.env.DATABASE_URL || dbConfig);
-
-const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
-const authToken = 'e8345cab51239a74558a895455dc93b2';
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
 //https://www.twilio.com/console/voice/twiml/apps  // brain2 app  ++ the line 54
-const appSID = 'AP1695bd9bd03148e7983d3616d396f48f';
-const callerId = '+14045311571';
+const appSID = process.env.APP_SID;
+const callerId = process.env.CALLER_ID;
 
 const ClientCapability = require('twilio').jwt.ClientCapability;
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
@@ -33,8 +23,8 @@ const VoiceResponse = require('twilio').twiml.VoiceResponse;
 function tokenGenerator() {
     const identity = 'Guest';
     const capability = new ClientCapability({
-        accountSid: accountSid,
-        authToken: authToken,
+        accountSid,
+        authToken,
     });
 
     capability.addScope(new ClientCapability.IncomingClientScope(identity));
@@ -101,6 +91,7 @@ const server = http.createServer(app)
 const port = process.env.PORT || 3000;
 console.log(`Twilio Client app HTTP server running at http://localhost:${port}`);
 server.listen(port);
+
 var io = socketIo.listen(server);
 
 
