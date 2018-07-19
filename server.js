@@ -3,6 +3,7 @@ const express = require('express'),
       urlencoded = require('body-parser').urlencoded,
       socketIo = require('socket.io'),
       twilioRouter = require('./twilioRouter') ;
+require('dotenv').config();
 
 
 const app = express();
@@ -12,7 +13,7 @@ app.use(urlencoded({ extended: false }));
 app.use(twilioRouter);
 
 const server = http.createServer(app)
-const port = 3000;
+const port = process.env.PORT || 3000;
 console.log(`Twilio Client app HTTP server running at http://localhost:${port}`);
 server.listen(port);
 
